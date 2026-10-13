@@ -13,10 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Genera dati
+
+      - name: Configura Git
+        run: |
+          git config --global user.name "Bot Offerte"
+          git config --global user.email "bot@github.com"
+
+      - name: Genera il file deals.json
         run: |
           python -c "
           import json, datetime
@@ -28,10 +31,11 @@ jobs:
               ]
           }
           with open('deals.json', 'w', encoding='utf-8') as f:
-              json.dump(data, f, ensure_ascii=False)
+              json.dump(data, f, ensure_ascii=False, indent=4)
           "
-      - name: Salva modifiche
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Aggiornamento automatico offerte"
-          file_pattern: deals.json
+
+      - name: Carica le modifiche sul sito
+        run: |
+          git add deals.json
+          git commit -m "Aggiornamento offerte automatico" || echo "Nessuna modifica da committare"
+          git push origin main

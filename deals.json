@@ -1,0 +1,27 @@
+{
+    "last_updated": "13/10/2026 21:20",
+    "deals": [
+        {
+            "id": 1,
+            "title": "Smart TV 55 OLED 4K - Aggiornato da GitHub",
+            "price": "399€",
+            "oldPrice": "1299€",
+            "discount": "-69%",
+            "marketplace": "Amazon",
+            "trustScore": 98,
+            "errorType": "Errore di Prezzo",
+            "category": "Tecnologia"
+        },
+        {
+            "id": 2,
+            "title": "Notebook Gaming i7",
+            "price": "899€",
+            "oldPrice": "1250€",
+            "discount": "-28%",
+            "marketplace": "eBay",
+            "trustScore": 92,
+            "errorType": "Nessun errore",
+            "category": "Informatica"
+        }
+    ]
+}

@@ -2,8 +2,8 @@ name: Aggiorna Offerte
 
 on:
   schedule:
-    - cron: '0 */3 * * *'
-  workflow_dispatch:
+    - cron: '0 */3 * * *' # Gira automaticamente ogni 3 ore
+  workflow_dispatch: # Permette anche il tasto manuale
 
 permissions:
   contents: write
@@ -12,21 +12,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Scarica il codice del sito
+        uses: actions/checkout@v4
 
-      - name: Configura Git
-        run: |
-          git config --global user.name "Bot Offerte"
-          git config --global user.email "bot@github.com"
+      - name: Configura Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-      - name: Genera il file deals.json
+      - name: Genera il file delle offerte aggiornato
         run: |
           python -c "
           import json, datetime
           data = {
               'last_updated': datetime.datetime.now().strftime('%d/%m/%Y %H:%M'),
               'deals': [
-                  {'id': 1, 'title': 'Smart TV 55 OLED 4K', 'price': '399€', 'oldPrice': '1299€', 'discount': '-69%', 'marketplace': 'Amazon', 'trustScore': 98, 'errorType': 'Errore di Prezzo', 'category': 'Tecnologia'},
+                  {'id': 1, 'title': 'Smart TV 55 OLED 4K - Aggiornato da GitHub', 'price': '399€', 'oldPrice': '1299€', 'discount': '-69%', 'marketplace': 'Amazon', 'trustScore': 98, 'errorType': 'Errore di Prezzo', 'category': 'Tecnologia'},
                   {'id': 2, 'title': 'Notebook Gaming i7', 'price': '899€', 'oldPrice': '1250€', 'discount': '-28%', 'marketplace': 'eBay', 'trustScore': 92, 'errorType': 'Nessun errore', 'category': 'Informatica'}
               ]
           }
@@ -34,8 +35,8 @@ jobs:
               json.dump(data, f, ensure_ascii=False, indent=4)
           "
 
-      - name: Carica le modifiche sul sito
-        run: |
-          git add deals.json
-          git commit -m "Aggiornamento offerte automatico" || echo "Nessuna modifica da committare"
-          git push origin main
+      - name: Salva e pubblica le modifiche sul sito
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Aggiornamento automatico offerte dal bot"
+          file_pattern: deals.json

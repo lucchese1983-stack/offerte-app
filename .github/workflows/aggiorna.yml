@@ -2,8 +2,8 @@ name: Aggiorna Offerte
 
 on:
   schedule:
-    - cron: '0 */3 * * *' # Gira automaticamente ogni 3 ore
-  workflow_dispatch: # Permette anche il tasto manuale
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -12,22 +12,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Scarica il codice del sito
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Configura Python
+      - name: Imposta Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Genera il file delle offerte aggiornato
+      - name: Genera e salva il file delle offerte
         run: |
           python -c "
           import json, datetime
           data = {
               'last_updated': datetime.datetime.now().strftime('%d/%m/%Y %H:%M'),
               'deals': [
-                  {'id': 1, 'title': 'Smart TV 55 OLED 4K - Aggiornato da GitHub', 'price': '399€', 'oldPrice': '1299€', 'discount': '-69%', 'marketplace': 'Amazon', 'trustScore': 98, 'errorType': 'Errore di Prezzo', 'category': 'Tecnologia'},
+                  {'id': 1, 'title': 'Smart TV 55 OLED 4K', 'price': '399€', 'oldPrice': '1299€', 'discount': '-69%', 'marketplace': 'Amazon', 'trustScore': 98, 'errorType': 'Errore di Prezzo', 'category': 'Tecnologia'},
                   {'id': 2, 'title': 'Notebook Gaming i7', 'price': '899€', 'oldPrice': '1250€', 'discount': '-28%', 'marketplace': 'eBay', 'trustScore': 92, 'errorType': 'Nessun errore', 'category': 'Informatica'}
               ]
           }
@@ -35,8 +34,10 @@ jobs:
               json.dump(data, f, ensure_ascii=False, indent=4)
           "
 
-      - name: Salva e pubblica le modifiche sul sito
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Aggiornamento automatico offerte dal bot"
-          file_pattern: deals.json
+      - name: Registra e pubblica automaticamente
+        run: |
+          git config --global user.name "Bot Offerte"
+          git config --global user.email "bot@github.com"
+          git add deals.json
+          git commit -m "Aggiornamento automatico offerte" || echo "Nessuna modifica"
+          git push

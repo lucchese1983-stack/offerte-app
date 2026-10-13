@@ -2,8 +2,11 @@ name: Aggiorna Offerte
 
 on:
   schedule:
-    - cron: '0 */3 * * *' # Cerca nuove offerte ogni 3 ore
-  workflow_dispatch: # Permette di avviarlo manualmente
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -27,9 +30,10 @@ jobs:
           with open('deals.json', 'w') as f:
               json.dump(data, f)
           "
-      - run: |
+      - name: Commit and push changes
+        run: |
           git config --global user.name "Bot Offerte"
           git config --global user.email "bot@github.com"
           git add deals.json
           git commit -m "Offerte aggiornate" || exit 0
-          git push
+          git push origin main
